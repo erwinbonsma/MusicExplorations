@@ -1,6 +1,7 @@
 import math
 import wave
 import struct
+from enum import Enum
 
 frate = 22050.0  # framerate as a float
 channel_range = 256
@@ -15,6 +16,14 @@ wave_table_size = 256
 border_samples = 16
 
 samples_per_note = int(frate / 7.5)
+
+triangle_table = []
+triangle_table.extend(range(min_val, max_val))
+triangle_table.extend(range(max_val, min_val, -1))
+
+wave_forms = [
+    triangle_table, # 0
+]
 
 # Starts with A4
 note_freqs = {
@@ -32,84 +41,88 @@ note_freqs = {
     "G#": 830.61
 }
 
-silence = ("", 0, 0)
+class Effect(Enum):
+    NONE = 0
+    DROP = 3
+
+silence = ("", 0, 0, Effect.NONE)
 
 # SFX 17 in Repair.p8
 tune_volume = max_volume
 sfx17 = [
-    ("D#", 2, tune_volume),
-    ("D#", 1, tune_volume),
-    ("A#", 1, tune_volume - 1),
-    ("D#", 1, tune_volume),
-    ("F#", 2, tune_volume - 2),
+    ("D#", 2, tune_volume, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("A#", 1, tune_volume - 1, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("F#", 2, tune_volume - 2, Effect.NONE),
     silence,
-    ("F#", 2, tune_volume - 4),
-    silence,
-
-    ("D#", 2, tune_volume),
-    ("D#", 1, tune_volume),
-    ("A#", 1, tune_volume - 1),
-    ("D#", 1, tune_volume),
-    ("F#", 2, tune_volume - 2),
-    silence,
-    ("F#", 2, tune_volume - 4),
+    ("F#", 2, tune_volume - 4, Effect.NONE),
     silence,
 
-    ("D#", 2, tune_volume),
-    ("D#", 1, tune_volume),
-    ("A#", 1, tune_volume - 1),
-    ("D#", 1, tune_volume),
-    ("F#", 2, tune_volume - 2),
-    ("D#", 1, tune_volume),
-    ("F#", 2, tune_volume - 4),
-    ("D#", 1, tune_volume),
-
-    ("D#", 2, tune_volume),
-    ("D#", 1, tune_volume),
-    ("A#", 1, tune_volume - 1),
-    ("D#", 1, tune_volume),
-    ("F#", 2, tune_volume - 2),
+    ("D#", 2, tune_volume, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("A#", 1, tune_volume - 1, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("F#", 2, tune_volume - 2, Effect.NONE),
     silence,
-    ("F#", 2, tune_volume - 4),
+    ("F#", 2, tune_volume - 4, Effect.NONE),
+    silence,
+
+    ("D#", 2, tune_volume, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("A#", 1, tune_volume - 1, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("F#", 2, tune_volume - 2, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("F#", 2, tune_volume - 4, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+
+    ("D#", 2, tune_volume, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("A#", 1, tune_volume - 1, Effect.NONE),
+    ("D#", 1, tune_volume, Effect.NONE),
+    ("F#", 2, tune_volume - 2, Effect.NONE),
+    silence,
+    ("F#", 2, tune_volume - 4, Effect.NONE),
     silence,
 ]
 
 sfx26 = [
-    ("C", 1, 7), # TODO: Add drop (also everywhere else)
+    ("C", 1, 7, Effect.DROP), # TODO: Add drop (also everywhere else)
     silence,
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
     silence,
-    ("C", 2, 5), # TODO: Make noise with fade out
+    ("C", 2, 5, Effect.DROP), # TODO: Make noise with fade out
     silence,
-    ("C", 1, 5),
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
+    ("C", 1, 5, Effect.DROP),
 
-    ("C", 1, 7),
+    ("C", 1, 7, Effect.DROP),
     silence,
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
     silence,
-    ("C", 2, 5), # TODO: Make noise with fade out
-    ("C", 1, 5),
-    ("C", 1, 4),
-    ("C", 0, 4),
+    ("C", 2, 5, Effect.DROP), # TODO: Make noise with fade out
+    ("C", 1, 5, Effect.DROP),
+    ("C", 1, 4, Effect.DROP),
+    ("C", 0, 4, Effect.DROP),
 
-    ("C", 1, 7),
+    ("C", 1, 7, Effect.DROP),
     silence,
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
     silence,
-    ("C", 2, 5), # TODO: Make noise with fade out
+    ("C", 2, 5, Effect.DROP), # TODO: Make noise with fade out
     silence,
-    ("C", 1, 5),
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
+    ("C", 1, 5, Effect.DROP),
 
-    ("C", 1, 7),
+    ("C", 1, 7, Effect.DROP),
     silence,
-    ("C", 1, 5),
+    ("C", 1, 5, Effect.DROP),
     silence,
-    ("C", 2, 5), # TODO: Make noise with fade out
-    ("C", 1, 5),
-    ("C", 1, 4),
-    ("C", 0, 4)
+    ("C", 2, 5, Effect.DROP), # TODO: Make noise with fade out
+    ("C", 1, 5, Effect.DROP),
+    ("C", 1, 4, Effect.DROP),
+    ("C", 0, 4, Effect.DROP)
 ]
 
 # Input is float value in range [-1, 1]
@@ -117,30 +130,34 @@ sfx26 = [
 def make_discrete(x):
     return math.floor(x * (channel_range / 2 - eps))
 
+def lerp(x0, x1, t):
+    return (x1 - x0) * t + x0
+
 # Surprisingly, this sounds pretty crap
 sine_table = [
     make_discrete(math.sin(2 * math.pi * t / wave_table_size)) for t in range(wave_table_size)
 ]
-
-triangle_table = []
-triangle_table.extend(range(min_val, max_val))
-triangle_table.extend(range(max_val, min_val, -1))
 
 silence_table = [0]
 
 def make_tune(notes):
     samples = []
     for note in notes:
-        name, octave, volume = note
+        name, octave, volume, effect = note
         if name == "":
             wave_table = silence_table
             period = 1
         else:
             wave_table = triangle_table
             period = frate / (note_freqs[name] * 2**(octave - 4 + 1))
+        if effect == Effect.DROP:
+            period_end = period * 2
+        else:
+            period_end = period
 
         for t in range(samples_per_note):
-            sample = wave_table[ int(t * len(wave_table) / period) % len(wave_table) ]
+            p = lerp(period, period_end, t/samples_per_note)
+            sample = wave_table[ int(t * len(wave_table) / p) % len(wave_table) ]
             boundary_delta = min(t, samples_per_note - 1 - t)
             v = volume * min(border_samples, boundary_delta) / border_samples
             samples.append(int(sample * (v / max_volume)))
