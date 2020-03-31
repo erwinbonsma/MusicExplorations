@@ -22,11 +22,18 @@ triangle_table = []
 triangle_table.extend(range(min_val, max_val))
 triangle_table.extend(range(max_val, min_val, -1))
 
+organ_table = []
+organ_table.extend(range(min_val, max_val))
+organ_table.extend(range(max_val, min_val, -1))
+organ_table.extend([x/2 + min_val/2 for x in range(min_val, max_val)])
+organ_table.extend([x/2 + min_val/2 for x in range(max_val, min_val, -1)])
+
 silence_table = [0]
 
 wave_forms = [
     triangle_table, # 0
     silence_table,  # 1
+    organ_table,    # 2
 ]
 
 # Starts with A4
@@ -53,47 +60,48 @@ class Effect(IntEnum):
 class Wave(IntEnum):
     TRIANGLE = 0
     SILENCE = 1
+    ORGAN = 2
     NOISE = 8
 
 silence = ("", 0, Wave.SILENCE, 0, Effect.NONE)
 
 # SFX 17 in Repair.p8
-tune_volume = max_volume
+tune_volume = max_volume - 2
 sfx17 = [
     ("D#", 2, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 2, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 2, Effect.NONE),
     silence,
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 4, Effect.NONE),
-    silence,
-
-    ("D#", 2, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
-    ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 2, Effect.NONE),
-    silence,
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 4, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 4, Effect.NONE),
     silence,
 
     ("D#", 2, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 2, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 2, Effect.NONE),
+    silence,
+    ("F#", 2, Wave.ORGAN, tune_volume - 4, Effect.NONE),
+    silence,
+
+    ("D#", 2, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 4, Effect.NONE),
+    ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
+    ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 2, Effect.NONE),
+    ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
+    ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
 
     ("D#", 2, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
     ("A#", 1, Wave.TRIANGLE, tune_volume - 1, Effect.NONE),
     ("D#", 1, Wave.TRIANGLE, tune_volume, Effect.NONE),
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 2, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 2, Effect.NONE),
     silence,
-    ("F#", 2, Wave.TRIANGLE, tune_volume - 4, Effect.NONE),
+    ("F#", 2, Wave.ORGAN, tune_volume - 4, Effect.NONE),
     silence,
 ]
 
@@ -154,7 +162,7 @@ def make_tune(notes):
         name, octave, wave, volume, effect = note
         if wave == Wave.NOISE:
             wave_table = wave_forms[Wave.TRIANGLE]
-        else:q
+        else:
             wave_table = wave_forms[wave]
         t_delta = 0
         if wave == Wave.SILENCE:
@@ -197,5 +205,10 @@ def write_wav(samples, fname):
 
     wav_file.close()
 
-# write_wav(make_tune(sfx17), "sfx17.wav")
-write_wav(make_tune(sfx26), "sfx26.wav")
+samples17 = make_tune(sfx17)
+samples26 = make_tune(sfx26)
+
+combined = [x[0] + x[1] for x in zip(samples17, samples26)]
+write_wav(samples17, "sfx17.wav")
+#write_wav(samples26, "sfx26.wav")
+#write_wav(combined, "combined.wav")
