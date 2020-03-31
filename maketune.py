@@ -32,26 +32,28 @@ note_freqs = {
     "G#": 830.61
 }
 
+silence = ("", 0, 0)
+
 # SFX 17 in Repair.p8
 tune_volume = max_volume
-tune = [
+sfx17 = [
     ("D#", 2, tune_volume),
     ("D#", 1, tune_volume),
     ("A#", 1, tune_volume - 1),
     ("D#", 1, tune_volume),
     ("F#", 2, tune_volume - 2),
-    ("", 0, 0),
+    silence,
     ("F#", 2, tune_volume - 4),
-    ("", 0, 0),
+    silence,
 
     ("D#", 2, tune_volume),
     ("D#", 1, tune_volume),
     ("A#", 1, tune_volume - 1),
     ("D#", 1, tune_volume),
     ("F#", 2, tune_volume - 2),
-    ("", 0, 0),
+    silence,
     ("F#", 2, tune_volume - 4),
-    ("", 0, 0),
+    silence,
 
     ("D#", 2, tune_volume),
     ("D#", 1, tune_volume),
@@ -67,9 +69,47 @@ tune = [
     ("A#", 1, tune_volume - 1),
     ("D#", 1, tune_volume),
     ("F#", 2, tune_volume - 2),
-    ("", 0, 0),
+    silence,
     ("F#", 2, tune_volume - 4),
-    ("", 0, 0),
+    silence,
+]
+
+sfx26 = [
+    ("C", 1, 7), # TODO: Add drop (also everywhere else)
+    silence,
+    ("C", 1, 5),
+    silence,
+    ("C", 2, 5), # TODO: Make noise with fade out
+    silence,
+    ("C", 1, 5),
+    ("C", 1, 5),
+
+    ("C", 1, 7),
+    silence,
+    ("C", 1, 5),
+    silence,
+    ("C", 2, 5), # TODO: Make noise with fade out
+    ("C", 1, 5),
+    ("C", 1, 4),
+    ("C", 0, 4),
+
+    ("C", 1, 7),
+    silence,
+    ("C", 1, 5),
+    silence,
+    ("C", 2, 5), # TODO: Make noise with fade out
+    silence,
+    ("C", 1, 5),
+    ("C", 1, 5),
+
+    ("C", 1, 7),
+    silence,
+    ("C", 1, 5),
+    silence,
+    ("C", 2, 5), # TODO: Make noise with fade out
+    ("C", 1, 5),
+    ("C", 1, 4),
+    ("C", 0, 4)
 ]
 
 # Input is float value in range [-1, 1]
@@ -122,5 +162,5 @@ def write_wav(samples, fname):
 
     wav_file.close()
 
-samples = make_tune(tune)
-write_wav(samples, "tune.wav")
+# write_wav(make_tune(sfx17), "sfx17.wav")
+write_wav(make_tune(sfx26), "sfx26.wav")
