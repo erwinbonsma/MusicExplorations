@@ -259,6 +259,8 @@ def make_tune(notes, samples_per_note = default_samples_per_note):
             volume_ramp_dn = 0
 
         t_delta = 0
+        vibrato_offset = 0
+        vibrato_dir = 1
 
         for n in range(samples_per_note):
             p = lerp(period_start, period_end, n / samples_per_note)
@@ -269,7 +271,12 @@ def make_tune(notes, samples_per_note = default_samples_per_note):
                 if t_delta < 0:
                     t_delta += len(wave_table)
 
-            t += len(wave_table) / p
+            if effect == Effect.VIBRATO:
+                vibrato_offset += vibrato_dir / (12 * p)
+                if abs(vibrato_offset) > 2:
+                    vibrato_dir = -vibrato_dir
+
+            t += len(wave_table) / (p * (1 + vibrato_offset / 100))
             if t >= len(wave_table):
                 t -= len(wave_table)
 
@@ -312,8 +319,8 @@ samples26 = make_tune(sfx26)
 samples18 = make_tune(sfx18, 2 * default_samples_per_note)
 
 #combined = [x[0] + x[1] for x in zip(samples17, samples26)]
-write_wav(samples_test1, "sfx_test1.wav")
-write_wav(samples17, "sfx17.wav")
+#write_wav(samples_test1, "sfx_test1.wav")
+#write_wav(samples17, "sfx17.wav")
 write_wav(samples18, "sfx18.wav")
-write_wav(samples26, "sfx26.wav")
+#write_wav(samples26, "sfx26.wav")
 #write_wav(combined, "combined.wav")
