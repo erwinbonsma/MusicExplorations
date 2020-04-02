@@ -23,6 +23,17 @@ triangle_table = []
 triangle_table.extend(range(min_val, max_val))
 triangle_table.extend(range(max_val, min_val, -1))
 
+tilted_saw_table = []
+tilted_saw_table.extend(range(min_val, max_val))
+tilted_saw_table.extend(range(max_val, min_val, -6))
+
+saw_table = []
+saw_table.extend(range(min_val, max_val))
+
+square_table = [min_val, max_val]
+
+pulse_table = [min_val, min_val, max_val]
+
 organ_table = []
 organ_table.extend(range(min_val, max_val))
 organ_table.extend(range(max_val, min_val, -1))
@@ -32,9 +43,13 @@ organ_table.extend([x/2 + min_val/2 for x in range(max_val, min_val, -1)])
 silence_table = [0]
 
 wave_forms = [
-    triangle_table, # 0
-    silence_table,  # 1
-    organ_table,    # 2
+    triangle_table,   # 0
+    tilted_saw_table, # 1
+    saw_table,        # 2
+    square_table,     # 3
+    pulse_table,      # 4
+    organ_table,      # 5
+    silence_table,    # 6
 ]
 
 # Starts with A4
@@ -63,9 +78,13 @@ class Effect(IntEnum):
 
 class Wave(IntEnum):
     TRIANGLE = 0
-    SILENCE = 1
-    ORGAN = 2
-    NOISE = 8
+    TILTED_SAW = 1
+    SAW = 2
+    SQUARE = 3
+    PULSE = 4
+    ORGAN = 5
+    SILENCE = 6
+    NOISE = 7
 
 silence = ("", 0, Wave.SILENCE, 0, Effect.NONE)
 
@@ -85,6 +104,31 @@ sfx_test1 = [
     ("C", 3, Wave.TRIANGLE, 4, Effect.NONE),
     ("C", 3, Wave.TRIANGLE, 3, Effect.NONE),
     ("C", 3, Wave.TRIANGLE, 2, Effect.NONE),
+]
+
+sfx_test2 = [
+    ("C", 3, Wave.TRIANGLE, 5, Effect.NONE),
+    ("C", 3, Wave.TRIANGLE, 5, Effect.NONE),
+    silence,
+    silence,
+    ("C", 3, Wave.TILTED_SAW, 5, Effect.NONE),
+    ("C", 3, Wave.TILTED_SAW, 5, Effect.NONE),
+    silence,
+    silence,
+    ("C", 3, Wave.SAW, 5, Effect.NONE),
+    ("C", 3, Wave.SAW, 5, Effect.NONE),
+    silence,
+    silence,
+    ("C", 3, Wave.SQUARE, 5, Effect.NONE),
+    ("C", 3, Wave.SQUARE, 5, Effect.NONE),
+    silence,
+    silence,
+    ("C", 3, Wave.PULSE, 5, Effect.NONE),
+    ("C", 3, Wave.PULSE, 5, Effect.NONE),
+    silence,
+    silence,
+    ("C", 3, Wave.ORGAN, 5, Effect.NONE),
+    ("C", 3, Wave.ORGAN, 5, Effect.NONE)
 ]
 
 # SFX 17 in Repair.p8
@@ -314,13 +358,14 @@ def write_wav(samples, fname):
     wav_file.close()
 
 samples_test1 = make_tune(sfx_test1)
+samples_test2 = make_tune(sfx_test2)
 samples17 = make_tune(sfx17)
 samples26 = make_tune(sfx26)
 samples18 = make_tune(sfx18, 2 * default_samples_per_note)
 
 #combined = [x[0] + x[1] for x in zip(samples17, samples26)]
-#write_wav(samples_test1, "sfx_test1.wav")
+write_wav(samples_test2, "sfx_test2.wav")
 #write_wav(samples17, "sfx17.wav")
-write_wav(samples18, "sfx18.wav")
+#write_wav(samples18, "sfx18.wav")
 #write_wav(samples26, "sfx26.wav")
 #write_wav(combined, "combined.wav")
